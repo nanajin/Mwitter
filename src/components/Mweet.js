@@ -2,6 +2,8 @@ import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useState } from "react";
 import { db, storage } from "../firebase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 
 function Mweet({mweetObj, isOwner}){
   const [edit, setEdit] = useState(false);
@@ -32,33 +34,35 @@ function Mweet({mweetObj, isOwner}){
     setNewMweet(value);
   }
   return(
-    <div>
+    <div className="nweet">
       {edit ? <>
-        <form onSubmit={onEditSubmit}>
+        <form onSubmit={onEditSubmit} className="container nweetEdit">
           <input 
             type="text" 
             placeholder = "Edit your mweet" 
             value={newMweet} 
             required
             onChange={onChange}
+            autoFocus
+            className="formInput"
           />
-          <input type="submit" value="Update"/>
+          <input type="submit" value="Update" className="formBtn"/>
         </form>
-        <button onClick={toggleEdit}>Cancel</button>
+        <button onClick={toggleEdit} className="formBtn cancelBtn">Cancel</button>
       </>: 
       <>
         <h4>{mweetObj.text}</h4>
         {mweetObj.attachmentUrl && 
-          <img 
-            src={mweetObj.attachmentUrl} 
-            width="50px" 
-            height="50px"
-          />}
+          <img src={mweetObj.attachmentUrl}/>}
         {isOwner && 
-          <>
-            <button onClick={onDelete}>Delete</button>
-            <button onClick={toggleEdit}>Edit</button>
-          </>
+          <div className="nweet__actions">
+            <button onClick={onDelete}>
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+            <button onClick={toggleEdit}>
+              <FontAwesomeIcon icon={faPencilAlt} />
+            </button>
+          </div>
         }
       </>
   }

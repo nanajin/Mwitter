@@ -5,24 +5,45 @@ import AppRouter from "./Router";
 
 function App() {
   const [init, setInit] = useState(false);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
+  const [newName, setNewName] = useState("");
 
   useEffect(()=>{
     onAuthStateChanged(auth, (user)=>{
       if(user){
-        // setIsLoggedIn(true);
+        if(user.displayName === null){
+          const name = user.email.split("@")[0];
+          user.displayName = name;
+        }
         setUserObj(user);
-      // }else{
-      //   setIsLoggedIn(false);
+        // setUserObj({
+        //   displayName: user.displayName,
+        //   uid: user.uid,
+        //   updateProfile: (args)=>updateProfile(user, {displayName: user.displayName})
+        // });
+      }else{
+        setUserObj(null);
       }
       setInit(true);
     });
   }, []);
+  const refreshUser = ()=>{
+    const user = auth.currentUser;
+    setNewName(user.displayName);
+    // setUserObj({
+    //   displayName: user.displayName,
+    //   uid: user.uid,
+    //   updateProfile: (args)=>updateProfile(user, {displayName: user.displayName})
+    // });
+  }
   return (
     <>
       {init ? 
-        <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj}/> : 
+        <AppRouter 
+          refreshUser={refreshUser}
+          isLoggedIn={Boolean(userObj)} 
+          userObj={userObj}
+        /> : 
         "Initializing..."}
     </>
   );
