@@ -2,7 +2,7 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import Mweet from "../components/Mweet";
 import { db } from "../firebase";
-import MweetFactory from "../components/MweetFactory";
+import MweetWrite from "../components/MweetWrite";
 
 function Home({userObj}){
   const [mweets, setMweets] = useState([]);
@@ -22,13 +22,15 @@ function Home({userObj}){
 
   return (
     <div className="container">
-      <MweetFactory userObj={userObj}/>
+      <MweetWrite userObj={userObj}/>
       <div style={{ marginTop: 30 }}>
-        {mweets.map((mweet)=>
+        {mweets.map((mweetObj)=>
           <Mweet
-            key={mweet.id} 
-            mweetObj = {mweet}
-            isOwner = {mweet.uid === userObj.uid}  
+            key={mweetObj.id} 
+            mweetObj = {mweetObj}
+            isOwner = {mweetObj.uid === userObj.uid}
+            profile = {mweetObj.profile}
+            // userObj = {userObj}  
           />
         )}
       </div>

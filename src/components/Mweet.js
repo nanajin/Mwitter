@@ -4,18 +4,20 @@ import React, { useState } from "react";
 import { db, storage } from "../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import twitterLogo from "../twitterLogo.png";
 
-function Mweet({mweetObj, isOwner}){
+function Mweet({mweetObj, isOwner, profile}){
   const [edit, setEdit] = useState(false);
   const [newMweet, setNewMweet] = useState(mweetObj.text);
   const mweetTextRef = doc(db, "mweets", `${mweetObj.id}`);
-
+  const date = new Date(mweetObj.createdAt);
+  
   const toggleEdit = () =>{
     setEdit((prev)=>!prev);
   }
 
   const onDelete = async()=>{
-    const ok = window.confirm("Want you delete?");
+    const ok = window.confirm("므윗을 삭제하시겠습니까?");
     const deleteRef = ref(storage, mweetObj.attachmentUrl);
     if(ok){
       if(mweetObj.attachmentUrl !== ""){
@@ -51,9 +53,20 @@ function Mweet({mweetObj, isOwner}){
         <button onClick={toggleEdit} className="formBtn cancelBtn">Cancel</button>
       </>: 
       <>
-        <h4>{mweetObj.text}</h4>
+        <div>
+          <img 
+            src={profile} 
+            alt={twitterLogo} 
+            className="profile_picture"
+          />           
+          <p>{mweetObj.writer}</p>
+          <p>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}.`}</p>
+        </div>
+        <div>
+          <h4>{mweetObj.text}</h4>
+        </div>
         {mweetObj.attachmentUrl && 
-          <img src={mweetObj.attachmentUrl}/>}
+          <img src={mweetObj.attachmentUrl} className="mweet__attachment"/>}
         {isOwner && 
           <div className="nweet__actions">
             <button onClick={onDelete}>

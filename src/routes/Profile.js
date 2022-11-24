@@ -1,11 +1,21 @@
 import { signOut, updateProfile } from "firebase/auth";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import twitterLogo from "../twitterLogo.png";
+import { v4 as uuidv4 } from "uuid"
+import Mweet from "../components/Mweet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function Profile({refreshUser, userObj}){
   const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
+  const [newAttachment, setNewAttachment] = useState(userObj.photoURL);
+  const [myMweets, setMyMweets] = useState([]);
+  const [basic, setBasic] = useState(false);
+  let mweetArr = []
   const navigate = useNavigate();
 
   const onLogOutClick = ()=>{
@@ -22,12 +32,16 @@ function Profile({refreshUser, userObj}){
       orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(q);
-    // querySnapshot.forEach((doc)=>{
-    // })
+    querySnapshot.forEach((doc)=>{
+      mweetArr.push({
+        id: doc.id,
+        ...doc.data()});
+    });
+    setMyMweets(mweetArr);
   }
   useEffect(()=>{
     getMyMweets();
-  },[]);
+  },[myMweets]);
 
   const onChange = (event)=>{
     const {target: {value}} = event;
@@ -35,15 +49,97 @@ function Profile({refreshUser, userObj}){
   }
   const onSubmit = async(event) =>{
     event.preventDefault();
+    let newAttachmentUrl = "";
+    if(newAttachment !== ""){
+      const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
+      const response = await uploadString(fileRef, newAttachment, "data_url");
+      newAttachmentUrl = await getDownloadURL(ref(storage, fileRef));
+    }
+    else if(newAttachment === ""){
+      newAttachmentUrl = twitterLogo;
+    }
     if(userObj.displayName !== newDisplayName){
-      await updateProfile(userObj, { displayName: newDisplayName });
-      //updateProfile에 프사 바꾸는 법도 있음 그거 해보면 좋을듯
+      await updateProfile(userObj, { 
+        displayName: newDisplayName,
+      });
       refreshUser();
     }
+    if(newAttachmentUrl !== ""){
+      await updateProfile(userObj, { 
+        photoURL: newAttachmentUrl
+      });
+      refreshUser();
+    }
+    setNewAttachment("");
+    updateProfileDoc();
+  }
+  const updateProfileDoc = async()=>{
+    if(userObj.uid === myMweets.uid){
+      const profileRef = doc(db, "mweets", `${myMweets.uid}`);
+      await updateDoc(profileRef, {profile: userObj.photoURL});
+    }
+  }
+  const onFileChange = async(event)=>{
+    const {target: {files}} = event;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent)=>{
+      const {currentTarget: {result}} = finishedEvent;
+      setNewAttachment(result);
+    }
+    reader.readAsDataURL(file);
+  };
+  const onClearProfile = async()=>{
+    setNewAttachment("");
+    setBasic(true);
   }
   return (
     <div className="container">
+      <div className="my_profile">
+        {basic ?
+          <div className="factoryForm__attachment">
+            <img 
+              src={twitterLogo} 
+              style={{
+                backgroundImage: twitterLogo,
+              }}
+            />        
+          </div> :
+          <>
+            {newAttachment && 
+              <div className="factoryForm__attachment">
+                <img 
+                  src={newAttachment} 
+                  style={{
+                    backgroundImage: newAttachment,
+                  }}
+                />        
+              </div>
+            }
+          </>
+        }
+        <div className="factoryForm__clear" onClick={onClearProfile}>
+            <FontAwesomeIcon icon={faTimes} />
+        </div>  
+        <img 
+          src={userObj.photoURL} 
+          alt={twitterLogo} 
+          className="profile_picture"
+        />   
+        <button type="">Modify Profile Picture
+          <input
+            id="modify-file"
+            type="file"
+            accept="image/*"
+            onChange={onFileChange}
+            // style={{
+            //   opacity: 0,
+            // }}
+          />
+        </button>
+      </div>
       <form onSubmit={onSubmit} className="profileForm">
+        <h2>nickname</h2>
         <input 
           type="text" 
           placeholder="Display name" 
@@ -61,6 +157,18 @@ function Profile({refreshUser, userObj}){
           }}
         />      
       </form>
+
+      <div style={{ marginTop: 30 }}>
+        {myMweets.map((mweet)=>
+          <Mweet
+            key={mweet.id} 
+            mweetObj = {mweet}
+            isOwner = {mweet.uid === userObj.uid}  
+            profile = {mweet.profile} 
+          />
+        )}
+      </div>
+
       <span className="formBtn cancelBtn logOut" onClick={onLogOutClick}>
         Log Out
       </span>

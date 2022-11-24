@@ -16,11 +16,6 @@ function App() {
           user.displayName = name;
         }
         setUserObj(user);
-        // setUserObj({
-        //   displayName: user.displayName,
-        //   uid: user.uid,
-        //   updateProfile: (args)=>updateProfile(user, {displayName: user.displayName})
-        // });
       }else{
         setUserObj(null);
       }
@@ -30,11 +25,6 @@ function App() {
   const refreshUser = ()=>{
     const user = auth.currentUser;
     setNewName(user.displayName);
-    // setUserObj({
-    //   displayName: user.displayName,
-    //   uid: user.uid,
-    //   updateProfile: (args)=>updateProfile(user, {displayName: user.displayName})
-    // });
   }
   return (
     <>
@@ -44,7 +34,7 @@ function App() {
           isLoggedIn={Boolean(userObj)} 
           userObj={userObj}
         /> : 
-        "Initializing..."}
+        "Loading..."}
     </>
   );
 }

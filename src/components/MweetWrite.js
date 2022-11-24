@@ -6,7 +6,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-function MweetFactory({userObj}){
+function MweetWrite({userObj}){
   const [mweet, setMweet] = useState("");
   const [attachment, setAttachment] = useState("");
   
@@ -26,7 +26,9 @@ function MweetFactory({userObj}){
       text: mweet,
       createdAt: Date.now(),
       uid: userObj.uid,
-      attachmentUrl
+      attachmentUrl,
+      writer: userObj.displayName,
+      profile: userObj.photoURL,
     }
     try{
       const docRef = await addDoc(collection(db, "mweets"), mweetObj);
@@ -35,6 +37,7 @@ function MweetFactory({userObj}){
       console.log(e);
     }
     setMweet("");
+    setAttachment("");
   };
   const onChange = (event)=>{
     const {target: {value}} = event;
@@ -52,8 +55,9 @@ function MweetFactory({userObj}){
   }
 
   const onClearAttachment = ()=> {
-    // setAttachment(null);
-    setAttachment("");
+    if(window.confirm("첨부한 사진을 삭제하시겠습니까?")){
+      setAttachment("");
+    }
   };
 
   return (
@@ -65,8 +69,8 @@ function MweetFactory({userObj}){
             value={mweet}
             onChange={onChange}
             type="text" 
-            placeholder="What's on your mind?" 
-            maxLength={120}
+            placeholder="Write Mweet Here!" 
+            maxLength={200}
           />
           <input 
             type="submit" 
@@ -104,4 +108,4 @@ function MweetFactory({userObj}){
     </>
   )
 }
-export default MweetFactory;
+export default MweetWrite;
