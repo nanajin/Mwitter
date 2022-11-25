@@ -16,6 +16,7 @@ function Profile({refreshUser, userObj}){
   const [myMweets, setMyMweets] = useState([]);
   const [basic, setBasic] = useState(false);
   let mweetArr = []
+  
   const navigate = useNavigate();
 
   const onLogOutClick = ()=>{
@@ -39,9 +40,12 @@ function Profile({refreshUser, userObj}){
     });
     setMyMweets(mweetArr);
   }
+  // useEffect(()=>{
+  //   getMyMweets();
+  // },[myMweets]);
   useEffect(()=>{
     getMyMweets();
-  },[myMweets]);
+  },[]);
 
   const onChange = (event)=>{
     const {target: {value}} = event;
@@ -71,13 +75,17 @@ function Profile({refreshUser, userObj}){
       refreshUser();
     }
     setNewAttachment("");
-    updateProfileDoc();
+    // updateProfileDoc();
   }
-  const updateProfileDoc = async()=>{
-    if(userObj.uid === myMweets.uid){
-      const profileRef = doc(db, "mweets", `${myMweets.uid}`);
+  useEffect(()=>{
+    myMweets.forEach((mweet)=>{
+      updateProfileDoc(mweet);
+    });  
+  }, [userObj.photoURL]);
+
+  const updateProfileDoc = async(mweet)=>{
+      const profileRef = doc(db, "mweets", `${mweet.id}`);
       await updateDoc(profileRef, {profile: userObj.photoURL});
-    }
   }
   const onFileChange = async(event)=>{
     const {target: {files}} = event;
