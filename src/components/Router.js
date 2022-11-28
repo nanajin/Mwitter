@@ -3,6 +3,8 @@ import {Routes, Route, HashRouter} from "react-router-dom";
 import Auth from "../routes/Auth";
 import Home from "../routes/Home";
 import Profile from "../routes/Profile";
+import DetailMweet from "./DetailMweet";
+import EditMweet from "./EditMweet";
 import Navigation from "./Navigation";
 
 function AppRouter({refreshUser, isLoggedIn, userObj}){
@@ -24,6 +26,8 @@ function AppRouter({refreshUser, isLoggedIn, userObj}){
           <>
             <Route path="/" element={<Home userObj={userObj}/>}/>
             <Route path="/profile" element={<Profile userObj={userObj} refreshUser={refreshUser}/>}/>
+            <Route path="/detail/:id/:owner" element={<DetailMweet/>}/>
+            <Route path="/edit/:id" element={<EditMweet/>}/>
           </>:
           <>
             <Route path="/" element={<Auth/>}/>

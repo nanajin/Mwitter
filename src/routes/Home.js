@@ -30,6 +30,7 @@ function Home({userObj}){
             mweetObj = {mweetObj}
             isOwner = {mweetObj.uid === userObj.uid}
             profile = {mweetObj.profile}
+            // docId = {mweetObj.id}
             // userObj = {userObj}  
           />
         )}

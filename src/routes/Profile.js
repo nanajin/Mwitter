@@ -131,7 +131,7 @@ function Profile({refreshUser, userObj}){
         </div>  
         <img 
           src={userObj.photoURL} 
-          alt={twitterLogo} 
+          alt="이미지 없음" 
           className="profile_picture"
         />   
         <button type="">Modify Profile Picture
