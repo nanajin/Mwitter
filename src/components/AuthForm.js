@@ -82,7 +82,7 @@ function AuthForm(){
 
   return (
     <div>
-      <div>
+      <div className="authtitle">
         {signUp ? <h1>회원가입</h1>: <h1>로그인</h1>}
       </div>
       <form onSubmit={onSubmit} className="container">
@@ -106,7 +106,7 @@ function AuthForm(){
             className="authInput"
             minLength={6}
           />
-          <button onClick={onVisibleClick} name="pwd">visible</button>
+          <button onClick={onVisibleClick} name="pwd" className="formBtn authpwdcheck">visible</button>
         </div>
         <div>
           <input 
@@ -118,12 +118,12 @@ function AuthForm(){
             onChange={onPwdCheckChange}
             className="authInput"
           />
-          <button onClick={onVisibleClick} name="check">visible</button>
+          <button onClick={onVisibleClick} name="check" className="formBtn authpwdcheck">visible</button>
 
         </div>
         {pwdCheck? 
-          <span>비밀번호가 일치합니다.</span>:
-          <span>비밀번호가 일치하지 않습니다.</span>
+          <span className="authpwdcheck_span">비밀번호가 일치합니다.</span>:
+          <span className="authpwdcheck_span">비밀번호가 일치하지 않습니다.</span>
         }
         <input 
           type="submit" 

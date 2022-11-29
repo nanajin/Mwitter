@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 
 function DetailMweet(){
+    const navigate = useNavigate();
     const docId = useParams().id;
     const owner = useParams().owner;
     let isOwner = true;
@@ -14,7 +15,6 @@ function DetailMweet(){
         isOwner = false;
     }
     // const isOwner = false;
-    console.log(isOwner)
     const mweetTextRef = doc(db, "mweets", `${docId}`);
     const [mweetObj, setMweetObj] = useState({});
 
@@ -40,21 +40,22 @@ function DetailMweet(){
             await deleteObject(deleteRef);
           }
           await deleteDoc(mweetTextRef);
+          navigate("/");
         }
       }
 
     return(
         <div className="detail_container">
-            <div className="detail_profile">
+            <div className="detail_profile profile__attachment">
                 <img 
                 src={mweetObj.profile} 
                 alt="이미지 없음"
-                className="profile_picture"
+                // className="profile__attachment"
                 />           
                 <p>{mweetObj.writer}</p>
                 {/* <p>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}.`}</p> */}
                 {isOwner && 
-                    <div className="nweet__actions">
+                    <div className="mweet__actions">
                         <button onClick={onDelete}>
                             <FontAwesomeIcon icon={faTrash} />
                         </button>
@@ -63,8 +64,9 @@ function DetailMweet(){
                                 mweetObj:{mweetObj},
                                 docId: {docId}
                             }}
+                            className="edit__icon"
                         >
-                            <FontAwesomeIcon icon={faPencilAlt} />
+                            <FontAwesomeIcon icon={faPencilAlt}/>
                         </Link>
                     </div>
                 }

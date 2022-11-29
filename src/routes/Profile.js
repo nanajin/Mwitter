@@ -12,19 +12,24 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function Profile({refreshUser, userObj}){
   const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
-  const [newAttachment, setNewAttachment] = useState(userObj.photoURL);
+  const [initAttachment, setInitAttachment] = useState(twitterLogo);
+  const [newAttachment, setNewAttachment] = useState("");
   const [myMweets, setMyMweets] = useState([]);
   const [basic, setBasic] = useState(false);
+  const [fileSelect, setFileSelect] = useState(false);
+  const [profile, setProfile] = useState(true);
   let mweetArr = []
-  
   const navigate = useNavigate();
-
+  console.log(twitterLogo);
   const onLogOutClick = ()=>{
-    signOut(auth).then(()=>{
-      navigate("/");
-    }).catch(e=>{
-      console.log(e);
-    })
+    const ok = window.confirm("로그아웃 하시겠습니까?");
+    if(ok){
+      signOut(auth).then(()=>{
+        navigate("/");
+        }).catch(e=>{
+          alert(e);
+      })
+    };
   }
   const getMyMweets = async()=>{
     const q = query(
@@ -40,9 +45,7 @@ function Profile({refreshUser, userObj}){
     });
     setMyMweets(mweetArr);
   }
-  // useEffect(()=>{
-  //   getMyMweets();
-  // },[myMweets]);
+  
   useEffect(()=>{
     getMyMweets();
   },[]);
@@ -51,9 +54,18 @@ function Profile({refreshUser, userObj}){
     const {target: {value}} = event;
     setNewDisplayName(value);
   }
+  const onModifyPicture = () =>{
+    setFileSelect(true);
+    setBasic(false);
+    setProfile(false);
+  }
   const onSubmit = async(event) =>{
     event.preventDefault();
     let newAttachmentUrl = "";
+
+    if(!userObj.photoURL){
+      newAttachmentUrl = twitterLogo;
+    }
     if(newAttachment !== ""){
       const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
       const response = await uploadString(fileRef, newAttachment, "data_url");
@@ -75,7 +87,7 @@ function Profile({refreshUser, userObj}){
       refreshUser();
     }
     setNewAttachment("");
-    // updateProfileDoc();
+    setFileSelect(false);
   }
   useEffect(()=>{
     myMweets.forEach((mweet)=>{
@@ -94,6 +106,7 @@ function Profile({refreshUser, userObj}){
     reader.onloadend = (finishedEvent)=>{
       const {currentTarget: {result}} = finishedEvent;
       setNewAttachment(result);
+      setBasic(false);
     }
     reader.readAsDataURL(file);
   };
@@ -105,17 +118,17 @@ function Profile({refreshUser, userObj}){
     <div className="container">
       <div className="my_profile">
         {basic ?
-          <div className="factoryForm__attachment">
+          <div className="profile__attachment profile__picture">
             <img 
               src={twitterLogo} 
-              style={{
-                backgroundImage: twitterLogo,
-              }}
+              // style={{
+              //   backgroundImage: twitterLogo,
+              // }}
             />        
           </div> :
           <>
             {newAttachment && 
-              <div className="factoryForm__attachment">
+              <div className="profile__attachment profile__picture">
                 <img 
                   src={newAttachment} 
                   style={{
@@ -126,28 +139,51 @@ function Profile({refreshUser, userObj}){
             }
           </>
         }
-        <div className="factoryForm__clear" onClick={onClearProfile}>
-            <FontAwesomeIcon icon={faTimes} />
-        </div>  
-        <img 
-          src={userObj.photoURL} 
-          alt="이미지 없음" 
-          className="profile_picture"
-        />   
-        <button type="">Modify Profile Picture
+        {userObj.photoURL? 
+          <>
+            {!newAttachment && !basic &&
+              <div className="profile__picture">
+                <img 
+                  src={userObj.photoURL} 
+                  alt="프로필 없음"
+                />
+              </div>
+            }
+          </>:
+          <>
+          
+            <div className="profile__picture">
+              <img 
+                src={twitterLogo} 
+                alt="프로필 없음"
+              />
+            </div>
+          
+        </>
+        }
+        {/* {!newAttachment && !basic &&
+          <div className="profile__picture">
+            <img 
+              src={userObj.photoURL} 
+              alt="프로필 없음"
+            />
+          </div>
+        } */}
+        {fileSelect ? 
           <input
             id="modify-file"
             type="file"
             accept="image/*"
             onChange={onFileChange}
-            // style={{
-            //   opacity: 0,
-            // }}
-          />
-        </button>
+            className="formBtn"
+          />:
+          <button onClick={onModifyPicture} className="formBtn profile_modify_btn">사진 변경</button>
+        }
+        <button onClick={onClearProfile} className="formBtn profile_modify_btn">기본 이미지로 변경</button>
+
       </div>
       <form onSubmit={onSubmit} className="profileForm">
-        <h2>nickname</h2>
+        <h2>Nickname</h2>
         <input 
           type="text" 
           placeholder="Display name" 
@@ -167,6 +203,7 @@ function Profile({refreshUser, userObj}){
       </form>
 
       <div style={{ marginTop: 30 }}>
+        <p className="my__mweets">My Mweets</p>
         {myMweets.map((mweet)=>
           <Mweet
             key={mweet.id} 

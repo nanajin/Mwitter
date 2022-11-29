@@ -5,11 +5,12 @@ import { v4 as uuidv4 } from "uuid"
 import { addDoc, collection } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-function MweetWrite({userObj}){
+function MweetWrite({userObj}){  
   const [mweet, setMweet] = useState("");
   const [attachment, setAttachment] = useState("");
-  
+  const navigate = useNavigate();
   const onSubmit = async(event)=>{
     if (mweet === "") {
       return;
@@ -38,6 +39,7 @@ function MweetWrite({userObj}){
     }
     setMweet("");
     setAttachment("");
+    navigate("/");
   };
   const onChange = (event)=>{
     const {target: {value}} = event;

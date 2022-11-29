@@ -15,13 +15,13 @@ function Mweet({mweetObj, isOwner, profile}){
   return(
     <div className="nweet">
         <div onClick={onMweetClick}>
-          <div>
+          <div className="profile__attachment one_mweet">
             <img 
               src={profile} 
               alt="이미지 없음"
-              className="profile_picture"
+              // className="profile__attachment"
             />           
-            <p>{mweetObj.writer}</p>
+            <h2>{mweetObj.writer}</h2>
             <p>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}.`}</p>
           </div>
           <div>

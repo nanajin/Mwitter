@@ -5,6 +5,7 @@ import Home from "../routes/Home";
 import Profile from "../routes/Profile";
 import DetailMweet from "./DetailMweet";
 import EditMweet from "./EditMweet";
+import MweetWrite from "./MweetWrite";
 import Navigation from "./Navigation";
 
 function AppRouter({refreshUser, isLoggedIn, userObj}){
@@ -28,6 +29,7 @@ function AppRouter({refreshUser, isLoggedIn, userObj}){
             <Route path="/profile" element={<Profile userObj={userObj} refreshUser={refreshUser}/>}/>
             <Route path="/detail/:id/:owner" element={<DetailMweet/>}/>
             <Route path="/edit/:id" element={<EditMweet/>}/>
+            <Route path="/mweetwrite" element={<MweetWrite userObj={userObj}/>}/>
           </>:
           <>
             <Route path="/" element={<Auth/>}/>
