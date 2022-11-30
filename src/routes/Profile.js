@@ -1,5 +1,5 @@
 import { signOut, updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,20 +7,29 @@ import { auth, db, storage } from "../firebase";
 import twitterLogo from "../twitterLogo.png";
 import { v4 as uuidv4 } from "uuid"
 import Mweet from "../components/Mweet";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function Profile({refreshUser, userObj}){
   const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
-  const [initAttachment, setInitAttachment] = useState(twitterLogo);
   const [newAttachment, setNewAttachment] = useState("");
   const [myMweets, setMyMweets] = useState([]);
   const [basic, setBasic] = useState(false);
   const [fileSelect, setFileSelect] = useState(false);
-  const [profile, setProfile] = useState(true);
+  const [defaultProfile, setDefaultProfile] = useState("");
   let mweetArr = []
   const navigate = useNavigate();
-  console.log(twitterLogo);
+
+  const defaultSetting = ()=>{
+    const defaultRef = ref(storage, "defaultProfile/twitterLogo.png");
+    getDownloadURL(ref(storage, defaultRef)).then((res)=>{
+      setDefaultProfile(res);
+    }).catch(e=>{
+      alert(e);
+    })
+  }
+  useEffect(()=>{
+    defaultSetting();
+  },[]);
+
   const onLogOutClick = ()=>{
     const ok = window.confirm("로그아웃 하시겠습니까?");
     if(ok){
@@ -57,23 +66,22 @@ function Profile({refreshUser, userObj}){
   const onModifyPicture = () =>{
     setFileSelect(true);
     setBasic(false);
-    setProfile(false);
   }
   const onSubmit = async(event) =>{
     event.preventDefault();
     let newAttachmentUrl = "";
 
     if(!userObj.photoURL){
-      newAttachmentUrl = twitterLogo;
+      newAttachmentUrl = defaultProfile;
     }
     if(newAttachment !== ""){
       const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
       const response = await uploadString(fileRef, newAttachment, "data_url");
       newAttachmentUrl = await getDownloadURL(ref(storage, fileRef));
     }
-    else if(newAttachment === ""){
-      newAttachmentUrl = twitterLogo;
-    }
+    // else if(newAttachment === ""){
+    //   newAttachmentUrl = defaultProfile;
+    // }
     if(userObj.displayName !== newDisplayName){
       await updateProfile(userObj, { 
         displayName: newDisplayName,
@@ -120,10 +128,7 @@ function Profile({refreshUser, userObj}){
         {basic ?
           <div className="profile__attachment profile__picture">
             <img 
-              src={twitterLogo} 
-              // style={{
-              //   backgroundImage: twitterLogo,
-              // }}
+              src={defaultProfile} 
             />        
           </div> :
           <>
@@ -151,24 +156,15 @@ function Profile({refreshUser, userObj}){
             }
           </>:
           <>
-          
-            <div className="profile__picture">
-              <img 
-                src={twitterLogo} 
-                alt="프로필 없음"
-              />
-            </div>
-          
+            {!newAttachment && 
+              <div className="profile__picture">
+                <img 
+                  src={defaultProfile} 
+                  alt="프로필 없음"
+                />
+              </div>}         
         </>
         }
-        {/* {!newAttachment && !basic &&
-          <div className="profile__picture">
-            <img 
-              src={userObj.photoURL} 
-              alt="프로필 없음"
-            />
-          </div>
-        } */}
         {fileSelect ? 
           <input
             id="modify-file"
