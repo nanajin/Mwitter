@@ -1,14 +1,13 @@
 {
   "files": {
     "main.css": "/Mwitter/static/css/main.6c79140a.css",
-    "main.js": "/Mwitter/static/js/main.6470a896.js",
-    "static/media/twitterLogo.png": "/Mwitter/static/media/twitterLogo.de1576d4a1cd30889c6c.png",
+    "main.js": "/Mwitter/static/js/main.c78a4eec.js",
     "index.html": "/Mwitter/index.html",
     "main.6c79140a.css.map": "/Mwitter/static/css/main.6c79140a.css.map",
-    "main.6470a896.js.map": "/Mwitter/static/js/main.6470a896.js.map"
+    "main.c78a4eec.js.map": "/Mwitter/static/js/main.c78a4eec.js.map"
   },
   "entrypoints": [
     "static/css/main.6c79140a.css",
-    "static/js/main.6470a896.js"
+    "static/js/main.c78a4eec.js"
   ]
 }
