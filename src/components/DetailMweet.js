@@ -14,7 +14,6 @@ function DetailMweet(){
     if(owner === "false"){
         isOwner = false;
     }
-    // const isOwner = false;
     const mweetTextRef = doc(db, "mweets", `${docId}`);
     const [mweetObj, setMweetObj] = useState({});
 
@@ -50,10 +49,8 @@ function DetailMweet(){
                 <img 
                 src={mweetObj.profile} 
                 alt="이미지 없음"
-                // className="profile__attachment"
                 />           
                 <p>{mweetObj.writer}</p>
-                {/* <p>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}.`}</p> */}
                 {isOwner && 
                     <div className="mweet__actions">
                         <button onClick={onDelete}>

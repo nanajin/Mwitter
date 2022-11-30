@@ -1,6 +1,4 @@
-import { doc } from "firebase/firestore";
 import React, { useState } from "react";
-import { db } from "../firebase";
 import {useNavigate} from "react-router-dom";
 
 function Mweet({mweetObj, isOwner, profile}){
@@ -19,7 +17,6 @@ function Mweet({mweetObj, isOwner, profile}){
             <img 
               src={profile} 
               alt="이미지 없음"
-              // className="profile__attachment"
             />           
             <h2>{mweetObj.writer}</h2>
             <p>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}.`}</p>

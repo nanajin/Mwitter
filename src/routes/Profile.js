@@ -4,7 +4,6 @@ import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db, storage } from "../firebase";
-import twitterLogo from "../twitterLogo.png";
 import { v4 as uuidv4 } from "uuid"
 import Mweet from "../components/Mweet";
 
@@ -79,9 +78,7 @@ function Profile({refreshUser, userObj}){
       const response = await uploadString(fileRef, newAttachment, "data_url");
       newAttachmentUrl = await getDownloadURL(ref(storage, fileRef));
     }
-    // else if(newAttachment === ""){
-    //   newAttachmentUrl = defaultProfile;
-    // }
+    
     if(userObj.displayName !== newDisplayName){
       await updateProfile(userObj, { 
         displayName: newDisplayName,
